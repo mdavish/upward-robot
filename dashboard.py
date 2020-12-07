@@ -1,5 +1,7 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
+import base64
 from core import *
 
 '''
@@ -13,6 +15,7 @@ def read_file(file):
         df = pd.read_excel(file)
     return df
 
+
 def map_perf(perf_string):
     perf_map = {
         'Low': 1,
@@ -21,6 +24,13 @@ def map_perf(perf_string):
         'Top': 4
     }
     return perf_map[perf_string]
+
+
+def get_table_download_link(df):
+    csv = df.to_csv(index=False)
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a download="robot_results.csv" href="data:file/csv;base64,{b64}">Download as a CSV.</a>'
+    return href
 
 def generate_schema(analyst_df, team_df, rotation_type):
     analyst_data = analyst_df.to_dict(orient='rows')
@@ -100,11 +110,18 @@ if team_file and analyst_file:
     '''
     ## For dev
     results = schema.set_placements(ranktype=ranktype)
+    results_df = []
     for team in results.keys():
         analysts = results[team]
         analysts = [analyst.name for analyst in analysts]
         results[team] = analysts
+        for analyst in analysts:
+            row = {'Team': team, 'Analyst': analyst}
+            results_df.append(row)
+    results_df = pd.DataFrame(results_df)
+    download_link = get_table_download_link(results_df)
     st.write(results)
+    st.write(download_link, unsafe_allow_html=True)
     '''
     ## Algorithm Log
     The log shows how the algorithm behaved, and where it placed analysts in
