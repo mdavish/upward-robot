@@ -74,13 +74,13 @@ def generate_schema(analyst_df, team_df, rotation_type):
         return schema
 
 rotation_type = st.selectbox('Choose Placement Type', ['Rotation', 'Final'])
-analyst_file = st.file_uploader('Upload Analyst Data', ['cvs', 'xlsx'])
+analyst_file = st.file_uploader('Upload Analyst Data', ['csv'])
 if analyst_file:
     analyst_df = read_file(analyst_file)
     st.write('### Analyst Data')
     st.write(analyst_df)
 
-team_file = st.file_uploader('Upload Team Data', ['csv', 'xlsx'])
+team_file = st.file_uploader('Upload Team Data', ['csv'])
 if team_file:
     team_df = read_file(team_file)
     st.write('### Team Data')
