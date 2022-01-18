@@ -198,7 +198,11 @@ class Schema:
                 for team in self.teams:
                     for rated_analyst, rating in team.ratings.items():
                         if rated_analyst == analyst.name:
-                            analyst_pref = analyst.prefs[team.name]
+                            try:
+                                analyst_pref = analyst.prefs[team.name]
+                            except KeyError:
+                                msg = f'Cannot find {analyst.name} preference for {team.name}'
+                                raise Exception(msg)
                             teams_ratings.append((team.name, rating, analyst_pref))
                 #Sorting. Very ugly. Not readable.
                 sorted_teams_ratings = sorted(teams_ratings, key=lambda row: (row[1], row[2]))
@@ -236,7 +240,11 @@ class Schema:
 
             for analyst in unassigned_analysts:
                 analyst.prefs_exhausted += 1
-                next_team = analyst.inv_prefs[analyst.prefs_exhausted]
+                try:
+                    next_team = analyst.inv_prefs[analyst.prefs_exhausted]
+                except:
+                    msg = f'We are unable to place {analyst.name} on a team.'
+                    raise Exception(msg)
                 placements[next_team].append(analyst)
 
             if unassigned_analysts:
